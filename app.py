@@ -3,20 +3,39 @@ import os
 import getpass
 
 PROFILES_FILE = 'profiles.json'
-
+# A function to load profiles from a file
 def load_profiles():
     if os.path.exists(PROFILES_FILE):
-        with open(PROFILES_FILE, 'r') as file:
-            return json.load(file)
-        
+        try:
+            with open(PROFILES_FILE, 'r') as file:
+                return json.load(file)
+        except json.JSONDecodeError:
+            print("Error reading profiles file. Starting with an empty profile list!")
+            return []   
     return []
+
 def save_profiles(profiles):
-    with open(PROFILES_FILE, 'w') as file:
-        json.dump(profiles, file, indent=4)
+    try:
+        with open(PROFILES_FILE, 'w') as file:
+            json.dump(profiles, file, indent=4)
+    except IOError:
+        print("Error saving profiles!")
 
 def create_profile(profiles):
-    name = input("Enter your name: ")
-    password = getpass.getpass("Enter your password: ")
+    while True:
+        name = input("Enter your name: ")
+        if any(profile['name'] == name for profile in profiles):
+            print("Profile name already exists. Please choose a different name")
+        else:
+            break
+    while True:
+        password = getpass.getpass("Enter your password: ")
+        confirm_password = getpass.getpass("Confirm your password: ")
+        if password == confirm_password:
+            break 
+        else:
+            print("Passwords do not match. Please try again.")
+            
     profiles.append({"name": name, "password":password})
     save_profiles(profiles)
     return name
