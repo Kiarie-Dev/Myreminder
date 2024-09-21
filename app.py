@@ -2,6 +2,7 @@ import json
 import os
 import getpass
 from typing import List, Dict
+from Taskmanager import TaskManager # Importing the taskmanager class
 
 class ProfileManager:
     PROFILES_FILE = 'profiles.json'
@@ -97,6 +98,10 @@ def application_start_up() -> None:
         user = profile_manager.select_profile()
 
     print(f"Welcome, {user}!")
+
+    #Creating an instance of the TaskManager with the selected user profile name
+    task_manager = TaskManager(user)
+    task_manager.start_up()
 
 if __name__ == "__main__":
     application_start_up()
