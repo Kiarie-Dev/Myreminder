@@ -16,7 +16,7 @@ INVALID_CHOICE_MSG = "Invalid choice. Please try again."
 class TaskManager:
     def __init__(self, name: str):
         self.name = name
-        self.tasks = self.load_tasks()
+        self.tasks = []
     
     def load_tasks(self) -> List[Dict[str, str]]:
         """Loading files from a JSON file."""
@@ -33,7 +33,7 @@ class TaskManager:
         """Save tasks to a JSON file."""
         try:
             with open(TASKS_FILE, 'w') as file:
-                json.dump(self.talks, file, indent=4)
+                json.dump(self.tasks, file, indent=4)
         except IOError:
             print(ERROR_SAVING_TASKS_MSG)
 
@@ -70,6 +70,24 @@ class TaskManager:
                 break
             else:
                 print(INVALID_CHOICE_MSG)
+    
+    def view_tasks(self, only_incomplete: bool = False) -> None:
+        """View the list of tasks."""
+        for idx, task in enumerate(self.tasks, start=1):
+            if only_incomplete and task['status'] == 'complete':
+                continue
+            status = "✓" if task['status'] == 'complete' else "✗"
+            print(f"{idx}. {task['description']} [{status}]")
+
+    def add_task(self) -> None:
+        """Add a new task to the task list."""
+        description = input("Enter the task description: ")
+        priority = int(input("Enter task priority from 1 to 10 where 10 is highest priority: "))
+        self.tasks.append({"description": description, "priority": priority, "status": "incomplete"})
+        self.save_tasks()
+        print("Task Added.")
+
+        
         
 
 if __name__ == "__main__":
